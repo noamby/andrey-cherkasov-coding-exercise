@@ -27,6 +27,16 @@ def main():
 
     todos = []
 
+    def get_todo_by_id(todo_id: int) -> Todo:
+        """Returns a Todo instance matching the given id.
+        
+        Args:
+            todo_id: the id of the Todo instance.
+        Raises:
+            IndexError: if there's no such Todo.
+        """
+        return [todo for todo in todos if todo.id == todo_id][0]
+
     @app.get("/", include_in_schema=False)
     def root():
         return RedirectResponse(url="/docs")
@@ -39,7 +49,7 @@ def main():
     def read_todo(todo_id: int):
         try:
             # technically we need a uniqueness check here, but when using usual ORM it's guaranteed
-            todo = [todo for todo in todos if todo.id == todo_id][0]
+            return get_todo_by_id(todo_id) 
         except IndexError:
             raise HTTPException(status_code=404, detail="Todo not found!")
 
@@ -51,10 +61,11 @@ def main():
             description=description,
             completed=False
         )
+        # TODO: check if further validation is needed
         todos.append(todo)
         return todo
 
-
+    
     return app
 
 app = main()
