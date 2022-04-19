@@ -65,6 +65,13 @@ def main():
         todos.append(todo)
         return todo
 
+    @app.put("/todos/{todo_id}")
+    def update_todo_status(todo_id: int):
+        todo = get_todo_by_id(todo_id)
+        # TODO: throw an error if the todo is already completed?
+        todo.completed = True
+        return todo
+
     return app
 
 app = main()
