@@ -33,9 +33,13 @@ def main():
         Args:
             todo_id: the id of the Todo instance.
         Raises:
-            IndexError: if there's no such Todo.
+            HttpException: if there's no such Todo.
         """
-        return [todo for todo in todos if todo.id == todo_id][0]
+        try:
+            # technically we need a uniqueness check here, but when using usual ORM it's guaranteed
+            return [todo for todo in todos if todo.id == todo_id][0]
+        except IndexError:
+            raise HTTPException(status_code=404, detail="Todo not found!")   
 
     @app.get("/", include_in_schema=False)
     def root():
@@ -47,11 +51,7 @@ def main():
 
     @app.get("/todos/{todo_id}")
     def read_todo(todo_id: int):
-        try:
-            # technically we need a uniqueness check here, but when using usual ORM it's guaranteed
-            return get_todo_by_id(todo_id) 
-        except IndexError:
-            raise HTTPException(status_code=404, detail="Todo not found!")
+        return get_todo_by_id(todo_id) 
 
     @app.post("/todos")
     def create_todo(name: str = Body(...), description: str = Body(default=None)):
@@ -65,7 +65,6 @@ def main():
         todos.append(todo)
         return todo
 
-    
     return app
 
 app = main()
