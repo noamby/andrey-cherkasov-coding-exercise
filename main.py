@@ -25,36 +25,34 @@ def get_next_id() -> int:
 def main():
     app = FastAPI()
 
-    memory = []
+    todos = []
 
     @app.get("/", include_in_schema=False)
     def root():
         return RedirectResponse(url="/docs")
 
-    @app.get("/todo")
-    def return_todo(all=None, _id=None):
-        if all:
-            return memory
-        
-        if not all:
-            if not _id:
-                return
-            else:
-                for x in memory:
-                    if x["_id"] == _id:
-                        return x
+    @app.get("/todos")
+    def read_todos():
+        return todos
 
-    @app.post("/todo")
-    def create_todo(sent_by_user = Body(...)):
-        if sent_by_user["name"]:
-            if sent_by_user["description"]:
-                next_id = len(memory) + 1
-                sent_by_user["_id"] = next_id
-                memory.append(sent_by_user)
-                return sent_by_user
+    @app.get("/todos/{todo_id}")
+    def read_todo(todo_id: int):
+        try:
+            # technically we need a uniqueness check here, but when using usual ORM it's guaranteed
+            todo = [todo for todo in todos if todo.id == todo_id][0]
+        except IndexError:
+            raise HTTPException(status_code=404, detail="Todo not found!")
 
-
-
+    @app.post("/todos")
+    def create_todo(name: str = Body(...), description: str = Body(default=None)):
+        todo = Todo(
+            id=get_next_id(),
+            name=name,
+            description=description,
+            completed=False
+        )
+        todos.append(todo)
+        return todo
 
 
     return app
