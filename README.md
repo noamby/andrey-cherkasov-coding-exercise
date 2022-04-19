@@ -19,6 +19,6 @@ Don't forget to commit your work, you can do it while working on the exercise or
 
 ## Running the Server
 
-1. Simply run `uvicorn main:app --relaod`.  
+1. Simply run `uvicorn main:app --reload`.  
 
 2. You can test and play with your API by opening the GitPod's Preview URL (preview on the right, or copy the URL to a new tab)
