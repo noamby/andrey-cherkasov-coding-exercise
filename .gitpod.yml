@@ -1,0 +1,11 @@
+tasks:
+  - init: |
+      pip3 install fastapi
+      pip3 install install "uvicorn[standard]"
+    command: |
+      uvicorn main:app --reload      
+      
+
+ports:
+  - port: 8000
+    onOpen: open-preview
