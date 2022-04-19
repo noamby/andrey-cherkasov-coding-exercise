@@ -1,5 +1,25 @@
-from fastapi import FastAPI, Body
+from typing import Optional
+
+from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
+
+
+class Todo(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    completed: bool
+
+
+next_id = 1
+
+
+def get_next_id() -> int:
+    global next_id
+    current_id = next_id
+    next_id += 1
+    return current_id
 
 
 def main():
